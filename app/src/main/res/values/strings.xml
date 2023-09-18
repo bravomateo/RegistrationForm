@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">RegistrationForm</string>
+    <string name="email">Correo Electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="rep_password">Repetir contraseña</string>
+    <string name="register">Guardar</string>
+    <string name="info">Información</string>
+    <string name="male">Masculino</string>
+    <string name="female">Femenino</string>
+    <string name="favorite_genre">Género favorito</string>
+    <string name="genre_love">Romance</string>
+    <string name="genre_suspense">Suspenso</string>
+    <string name="genre_terror">Terror</string>
+    <string name="genre_comic">Humor</string>
+    <string name="genre_adventure">Aventura</string>
+    <string name="genre_fiction">Ficción</string>
+    <string name="name">Nombre</string>
+    <string name="birthdate">Ingrese su fecha de nacimiento</string>
+    <string name="date_birth">Fecha de Nacimiento</string>
+
+    <string-array name="city_list">
+        <item>Bogota</item>
+        <item>Cali</item>
+        <item>Medellin</item>
+        <item>Pereira</item>
+        <item>Manizales</item>
+    </string-array>
+
+
+</resources>
