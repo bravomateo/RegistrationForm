@@ -5,7 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.CalendarContract.CalendarAlerts
 import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.registrationform.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -13,6 +16,7 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
 
     private  lateinit var registerBinding: ActivityMainBinding
+    private  lateinit var mainViewModel: MainViewModel
     private var fechaNacimiento: String = ""
     private var cal = Calendar.getInstance()
 
@@ -24,16 +28,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         val dataSetListener = DatePickerDialog.OnDateSetListener {view, year, month, dayOfMonth ->
-                cal.set(Calendar.YEAR, year)
-                cal.set(Calendar.MONTH, month)
-                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            cal.set(Calendar.YEAR, year)
+            cal.set(Calendar.MONTH, month)
+            cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-                val format = "MM/dd/yyyy"
-                val sdf = SimpleDateFormat(format, Locale.US)
-                fechaNacimiento = sdf.format(cal.time).toString()
-                registerBinding.dateBirthButton.setText(fechaNacimiento)
+            val format = "MM/dd/yyyy"
+            val sdf = SimpleDateFormat(format, Locale.US)
+            fechaNacimiento = sdf.format(cal.time).toString()
+            registerBinding.dateBirthButton.setText(fechaNacimiento)
 
-            }
+        }
 
         registerBinding.dateBirthButton.setOnClickListener {
             DatePickerDialog(
@@ -45,61 +49,50 @@ class MainActivity : AppCompatActivity() {
             ).show()
         }
 
+        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
+
+        val informationObserver = Observer<String> {information ->
+            registerBinding.infoTextView.text = information
+        }
+        mainViewModel.information.observe(this, informationObserver)
+
+
+        val favoritesGenreObserver = Observer<String> {favoritesGenre ->
+            registerBinding.infoTextView.text = favoritesGenre
+        }
+        mainViewModel.information.observe(this, favoritesGenreObserver)
+
+
+        val errorMesaggeObserver = Observer<String> {errorMesagge ->
+            Toast.makeText(this, errorMesagge, Toast.LENGTH_LONG).show()
+        }
+        mainViewModel.errorMessage.observe(this, errorMesaggeObserver)
+
+
         registerBinding.registerButton.setOnClickListener{
 
-            // nombre
-            val name = registerBinding.nameEditText.text.toString()
-            // email
-            val email = registerBinding.emailEditText.text.toString()
-            // contraseña
-            val password = registerBinding.passwordEditText.text.toString()
-            // repetir contraseña
+            val name        = registerBinding.nameEditText.text.toString()
+            val email       = registerBinding.emailEditText.text.toString()
+            val password    = registerBinding.passwordEditText.text.toString()
             val repPassword = registerBinding.repPasswordEditText.text.toString()
+            var city        = registerBinding.spCiudad.selectedItem.toString()
 
-            // Genero
             var genre = "Masculino"
             if(registerBinding.femaleRadioButton.isChecked) {
                 genre = "Femenino"
             }
+            val adventure = registerBinding.adventureCheckBox.isChecked
+            val comic = registerBinding.adventureCheckBox.isChecked
+            val fiction = registerBinding.adventureCheckBox.isChecked
+            val love = registerBinding.adventureCheckBox.isChecked
+            val terror = registerBinding.adventureCheckBox.isChecked
+            val suspense = registerBinding.adventureCheckBox.isChecked
 
-            // Generos de Pelicula
-            var favoritesGenre = ""
-            if(registerBinding.adventureCheckBox.isChecked) {
-                favoritesGenre += "Aventura\n"
-            }
-            if(registerBinding.comicCheckBox.isChecked) {
-                favoritesGenre += "Humor\n"
-            }
-            if(registerBinding.fictionCheckBox.isChecked) {
-                favoritesGenre += "Ficcion\n"
-            }
-            if(registerBinding.loveCheckBox.isChecked) {
-                favoritesGenre += "Romance\n"
-            }
-            if(registerBinding.terrorCheckBox.isChecked) {
-                favoritesGenre += "Terror\n"
-            }
-            if(registerBinding.suspenseCheckBox.isChecked) {
-                favoritesGenre += "Suspenos\n"
-            }
+            mainViewModel.ValidateFavGenres(adventure, comic, fiction, love, terror, suspense)
 
-            // ciudad
-            var city = registerBinding.spCiudad.selectedItem.toString()
+            mainViewModel.validateEntriesAndPassword(name, email, password, repPassword, fechaNacimiento, genre, city)
 
-            var information = name + "\n" + email
-
-            if (name.isEmpty() || email.isEmpty() || password.isEmpty() || repPassword.isEmpty() || fechaNacimiento.isEmpty()) {
-                Toast.makeText(this, "Verifique que todos los campos estén llenos", Toast.LENGTH_LONG).show()
-            }
-            else {
-                if (password == repPassword) {
-                    information +=  "\n" +  password + "\n" + genre + "\n" + favoritesGenre  + fechaNacimiento + "\n" + city
-                    registerBinding.infoTextView.text = information
-                }
-                else {
-                    Toast.makeText(this, "Las contraseñas no son iguales", Toast.LENGTH_LONG).show()
-                }
-            }
 
         }
     }
